@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>libary APP</title>
+    <style>
+        .center{
+            text-align: center;
+        }
+        .end{
+            text-align: end;
+        }
+        .justify{
+            text-align: justify;
+        }
+        .left{
+            text-align: left;
+        }
+        .start{
+            text-align: start;
+        }
+        
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+        }
+
+        
+    </style>
+</head>
+<body>
+   <h1 class="center">Kütüphane yeni kullanıcı kayıt </h1>
+   <form action="/register" method="POST">  
+       
+       <label for="new_user_pasaport">TC no:</label><br>
+       <input type="number" id="new_user_pasaport "name="new_user_pasaport" pattern="\d{11}" title="11 haneli bir sayı girin"><br><br>
+       
+       <label for="new_user_name">kullanıcı adınız:</label><br>
+       <input type="text" name="new_user_name"><br><br>
+       <label for="new_user_pass">şifreniz:</label><br>
+       <input type="password" name="new_user_pass"><br><br>
+       <button type="submit"><strong>CREAT</strong> </button><br><br>
+       <a href="{{url_for('login')}}"><strong>Already you have an account? login here</strong></a><br>
+    {% if user == True %}
+        <p>üyelik  başarıyla oluşturuldu {{okey}}</p>
+    {% else  %}
+        <p>bilgilenizi kontrol edinnn </p>
+
+    {% endif %}
+
+
+</body>
+</html>

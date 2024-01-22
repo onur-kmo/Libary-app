@@ -1,0 +1,60 @@
+Bu projenin amacı Flask'ı kullanarak bir Kütüphane Otomasyon Sistemi (LAS) uygulamaktır.
+web çerçevesi, veritabanı olarak MongoDB ve mesajlaşma için Apache Kafka. LAS
+kitap ödünç verme, rezervasyon ve arama işlevselliği dahil olmak üzere çeşitli hizmetler sağlayacaktır.
+Gereksinimler:
+➢ Flask Web Uygulaması: Analiz ettiğiniz gereksinimleri karşılamak için bir REST API uygulayın.
+Kütüphane Otomasyon Sistemi için ilk ödev.
+➢ MongoDB Entegrasyonu: Kitaplar, kullanıcılar, vb. ile ilgili verileri depolamak ve yönetmek için MongoDB kullanın.
+borçlanma kayıtları, cezalar ve rezervasyonlar.
+➢ Apache Kafka Mesajlaşma: Farklı kişiler arasındaki iletişim için Apache Kafka'yı entegre edin
+LAS'ın bileşenleri güvenilir ve ölçeklenebilir mesajlaşma sağlar.
+➢ Kullanıcı Kimlik Doğrulaması ve Yetkilendirme: Bir kullanıcı kimlik doğrulama sistemi uygulayın.
+LAS hizmetlerine erişimi kontrol etmek için roller (öğrenciler, öğretim üyeleri, personel ve mezunlar).
+Güvenli kullanıcı kimlik doğrulaması ve yetkilendirmesi için JWT'yi uygulayın. LAS'a yapılan her istek
+hizmetler JWT kullanılarak doğrulanmalıdır.
+Notlar:
+1. Sistem mimarisini, veritabanını açıklayan kapsamlı belgeleri ekleyin
+şema ve API uç noktaları.
+2. Tüm bağımlılıkları açıkça belirtin ve bağımlılığın kolay kopyalanması için bir kurulum kılavuzu ekleyin.
+çevre.
+3. Temel özelliklerin işlevselliğini sağlamak için bir dizi test senaryosu sağlayın.
+
+
+
+
+
+
+Proje Yapısını Oluştur:
+
+Bir proje klasörü oluştur ve içine ana dosyaları ekleyerek temel bir yapı kur.
+Flask uygulamanı oluşturmak için ana uygulama dosyanı (örneğin, app.py) ve diğer gerekli dosyaları ekleyin.
+Flask Web Uygulaması Oluştur:
+
+Flask uygulamanı oluştur ve temel rotaları tanımla.
+Flask-RESTful veya benzer bir eklenti kullanarak RESTful API'yi uygula.
+API uç noktalarını, örneğin kitap ödünç alma, rezervasyon ve arama işlevselliği için tanımla.
+MongoDB Entegrasyonu:
+
+pymongo veya benzer bir sürücü kullanarak MongoDB'ye bağlan.
+Kitaplar, kullanıcılar, borçlanma kayıtları, cezalar ve rezervasyonlar için MongoDB şemalarını oluştur.
+Flask uygulaman içinde bu veritabanı işlemlerini yöneten fonksiyonları ekleyin.
+Apache Kafka Mesajlaşma:
+
+confluent_kafka veya benzer bir kütüphane kullanarak Apache Kafka'ya bağlan.
+Mesajlaşma için konuları tanımla ve gerekli işlemleri gerçekleştiren fonksiyonları ekleyin.
+Kullanıcı Kimlik Doğrulama ve Yetkilendirme:
+
+Flask uygulamanıza bir kullanıcı kimlik doğrulama sistemi ekleyin (örneğin, Flask-Login veya JWT kullanarak).
+Kullanıcı rollerini (öğrenciler, öğretim üyeleri, personel, mezunlar) tanımlayın.
+JWT kullanarak güvenli kullanıcı kimlik doğrulama ve yetkilendirme işlemlerini uygulayın.
+Belgeler ve Test Senaryoları:
+
+Sistem mimarisini ve veritabanı şemalarını açıklayan belgeleri oluşturun.
+API uç noktalarını ve kullanımını belgeleyin.
+Tüm bağımlılıkları belirtin ve kurulum kılavuzu ekleyin.
+Temel özellikleri test etmek için bir dizi test senaryosu oluşturun.
+Test Et ve Geliştir:
+
+Oluşturduğun özellikleri test et ve hataları düzelt.
+Kullanıcıların beklenen şekilde etkileşimde bulunabilmelerini sağlamak için uygulamayı geliştir.
+Bu adımlar, projenin genel yapısını oluşturman ve temel özellikleri eklemen için sana yardımcı olacaktır. İlk olarak Flask uygulamanı oluşturarak başlayabilir ve ardından diğer bileşenleri ekleyerek devam edebilirsin.

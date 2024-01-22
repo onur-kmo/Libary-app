@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>libary APP</title>
+    <style>
+        .center{
+            text-align: center;
+        }
+        .end{
+            text-align: end;
+        }
+        .justify{
+            text-align: justify;
+        }
+        .left{
+            text-align: left;
+        }
+        .right{
+            text-align: right;
+        }
+        
+        img.fixed
+   {
+      position: fixed;
+
+      top: 20px;
+      right: 15px;
+   }
+    </style>
+</head>
+<body>
+    
+    
+    <h1 class="center">Kütüphane uygulamasına hoş geldiniz </h1>
+    {% if login  %}
+        <p class="right">giriş yapılan kullanıcı: {{user}}</p><br><br>
+        
+    {% endif %}
+
+    <a href="{{url_for('login')}}">login page</a><br>
+    <a href="{{url_for('register')}}">register page</a><br>
+    <a href="{{url_for('show_book')}}">show book</a><br>
+    <a href="{{url_for('property_user')}}">property user</a><br>
+    <a href="{{url_for('logout')}}"><strong>logout</strong></a><br>
+    <a href="{{url_for('rent_books')}}"><strong>KİTAP KİRALAMA</strong></a><br>
+
+    
+   
+</body>
+</html>

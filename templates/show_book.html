@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ol>
+        
+        {% for show in books %}
+        
+        <li>
+            
+            kitabın adı: {{show["title"]}}---- kitabın dili: {{show["language"]}}---
+            kitap sayfası: {{show["pages"]}}----
+            kitabın yazarı: {{show["author"]}}----
+            kitap nerede: {{show["where"]}}
+        </li><br>
+        {% endfor %}
+    </ol>
+    
+  
+</body>
+</html>

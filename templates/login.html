@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>libary APP</title>
+    <style>
+        .center{
+            text-align: center;
+        }
+        .end{
+            text-align: end;
+        }
+        .justify{
+            text-align: justify;
+        }
+        .left{
+            text-align: left;
+        }
+        .start{
+            text-align: start;
+        }
+        
+        .error-message {
+            color: red;
+        }
+         /* Chrome, Safari, Edge, Opera */
+         input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+        }
+
+    </style>
+</head>
+<body>
+   <h1 class="center">Kütüphane login sayfası </h1><br>
+   <form action="/login" method="POST">  
+        
+       <label for="user_pasaport">Tc No: </label><br>
+       <input type="number" name="pasaport_no" pattern="\d{11}" title="11 haneli bir sayı girin"> <br>
+       
+       <label for="user_name">Kullanıcı Adınız: </label> <br>
+       <input type="text" name="user_name"><br>
+       
+       <label for="password">şifreniz: </label><br>
+       <input type="password" name="user_pass"><br>
+       
+       <button type="submit"><strong>LOGİN</strong> </button><br><br>
+       <a href="{{url_for('register')}}">if you dont have an account Sign UP</a>
+        
+        {% if eror %}
+            <p>kullanıcı adı veya parola yanlış</p>
+        {% endif %}
+        
+   
+</body>
+</html>

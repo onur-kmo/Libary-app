@@ -1,0 +1,26 @@
+{
+  "type": "Compass Connections",
+  "version": {
+    "$numberInt": "1"
+  },
+  "connections": [
+    {
+      "id": "32608771-1c8d-419c-9115-d6cd0202fa92",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1705225895335"
+        }
+      },
+      "favorite": {
+        "name": "lib_base",
+        "color": "color3"
+      },
+      "connectionOptions": {
+        "connectionString": "mongodb://localhost:27017/L%C4%B0B_BASE",
+        "oidc": {
+          "serializedState": "eyJvaWRjUGx1Z2luU3RhdGVWZXJzaW9uIjowLCJzdGF0ZSI6W119"
+        }
+      }
+    }
+  ]
+}

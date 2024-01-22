@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .center{
+            text-align: center;
+        }
+        .end{
+            text-align: end;
+        }
+        .justify{
+            text-align: justify;
+        }
+        .left{
+            text-align: left;
+        }
+        .right{
+            text-align: right;
+        }
+        
+        img.fixed
+   {
+      position: fixed;
+
+      top: 20px;
+      right: 15px;
+   }
+    </style>
+</head>
+<body>
+
+    
+    
+    <form action="/user_setting" method="post"class="center"> <!-- Form gönderme işlemi -->
+        <label for="user_job">mesleğiniz</label><br>
+        <input type="text" id="user_job" name="user_job" placeholder="mesleğinizi giriniz" required>
+        <br>
+        <label for="user_city">yaşadığınız şehir</label><br>
+        <input type="text" id="user_city" name="user_city" placeholder="şehir giriniz" required>
+        <br>
+        <label for="user_phone">telefon numaranız</label><br>
+        <input type="number" id="user_phone" name="user_phone" placeholder="telefon numaranızı giriniz" required>
+        <br>
+        <label for="user_mail">mail giriniz</label><br>
+        <input type="text" id="user_mail" name="user_mail" placeholder="mail giriniz" required>
+        <br>
+        <input type="submit" value= GÖNDER>
+        <br>
+        <br>
+        <p class="center">
+    
+            {% if login == True %}
+                    
+                {% for user in user_info %}
+                telefon numarası  <strong>{{user["phone"]}}</strong><br>
+                mail adresi  <strong>{{user["mail"]}}</strong><br>
+                yaşadığınız şehir  <strong>{{user["city"]}}</strong><br>
+                mesleğiniz  <strong>{{user["job"]}}</strong><br>
+                
+                {% endfor %}
+            {% endif %}
+            
+        </p><br>
+        <p>
+            {% if user_book %}
+              <strong>kiraldağınız kitaplar: 
+            <li>  {{user_book}}</li>
+                
+                {% endif %}
+                
+            </strong>
+            
+        </p>
+        
+    </form>
+    
+    <a href="{{url_for('home')}}">return Home Page</a><br>
+    
+    
+        
+        
+        
+    
+    
+        
+    
+</body>
+</html>
