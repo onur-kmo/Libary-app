@@ -2,20 +2,19 @@ from flask import Flask,render_template,request,redirect,url_for,session
 from flask_pymongo import PyMongo
 import jwt
 import datetime
-
-
+# from pymongo.server_api import ServerApi
+# from pymongo.mongo_client import MongoClient
 
 
 
 """login yapılan kullanıcıyı tut 
 """
 app = Flask(__name__)
-# app.config["MONGO_URI"] = "mongodb://localhost:27017/lib_base"
-app.config["MONGO_URI"] = "mongodb+srv://onurkmo53:kmoonur.1999@onurkmo.9h9b3tx.mongodb.net/?retryWrites=true&w=majority"
-
+app.config["MONGO_URI"] = "mongodb+srv://onurkmo53:kmoonur.1999@onurkmo.9h9b3tx.mongodb.net/lib_base"
 mongo = PyMongo(app).db
 secret_key="admin"
 app.secret_key="admin"
+
 
 
 @app.route("/")
@@ -37,8 +36,8 @@ def show_book():
 def rent_books():
     # from book import rent_book
     # a,books=rent_books()
-    bookss=mongo.book.find({"rent_time":"0"})
-    from book import show_books,rent_book
+    bookss=mongo.book.find({})
+    from book import rent_book
     a,tokenn=_online_user()
     if a == True:
         if request.method=="POST":
@@ -218,8 +217,9 @@ def logout():
 #     logout()
 
 if __name__=="__main__":
-    from book import update_rent_book
-    # update_rent_book()
+    from book import update_rent_book,update_rez_book
+    update_rent_book()
+    update_rez_book()
     app.run(debug=True)
     
     

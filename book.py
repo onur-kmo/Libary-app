@@ -1,7 +1,8 @@
 from flask import Flask,render_template,request,redirect,url_for
 from flask_pymongo import PyMongo
 from datetime import datetime,timedelta
-
+from pymongo.server_api import ServerApi
+from pymongo.mongo_client import MongoClient
 
 """
 DB deki kitapları gösterme/listeleme
@@ -11,10 +12,8 @@ kitapların durumu; nerede, eğerkimdeyse nere de ,
 borçlanma kayıtları, cezalar ve rezervasyonlar.
 """
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb://localhost:27017/lib_base"
+app.config["MONGO_URI"] = "mongodb+srv://onurkmo53:kmoonur.1999@onurkmo.9h9b3tx.mongodb.net/lib_base"
 mongo = PyMongo(app).db
-
-
 
 
 def show_books():
@@ -24,11 +23,9 @@ def show_books():
     kira süresi
     """
     books=mongo.book.find({},{"_id":False})
-    rent_book=mongo.book.find({"rent_time": {"$gt": "0"}})
+    return books 
     
-    return books #render_template("show_book.html",books=books)
     
- 
 def rent_book(book):
     from main import _online_user
     a,token=_online_user()
@@ -36,7 +33,6 @@ def rent_book(book):
     now = datetime.now()
     end_day=now+timedelta(days=30)
     if a == True:
-        
         book_rent= mongo.book.find_one({"title":book["title"]},{"_id":False})
         if int(book_rent["rent_time"]) == 0 :
             mongo.book.update_many({"title":book["title"]},{"$set":{"rent_time":"30",
@@ -53,23 +49,20 @@ def rent_book(book):
 def rez_book(rez_book):
     """
     kitapların rezervasyon yapılması 
+    fonksiyona, kiralama sayfasından gelen string değeri data base de eşleştirip
+    eşleşen kitabı yeni bir değişken ile tanımlayıp, veri güncellemesi.
     """
     from main import _online_user
     a,token=_online_user
     user=mongo.token_user.find_one({"token":token})["pasaport_no"]
-    if rez_book["rent_time"] >0 and  rez_book["ren_user"] != None:
-        mongo.book.update_one({"title":rez_book["title"]},{"$set":{"rez_user":user,"rez_start_time":rez_book["end_time_rent"]}})
-        return True,rez_book
+    book=mongo.book.find_one({"title":rez_book})#html den gelen string DB de eşleşip, yeni bir değişken 
+    if book["rent_user"] != None:
+        mongo.book.update_one({"title":book["title"]},{"$set":{"rez_user":user}})
+        return True
     else:
-        return False,False
+        return False
 
         
-        
-
-
-    
-        
-
 def where_book():
     """kütüphanede bulunan kitaplar
     kitap kullanıcıdamı, kütüphanedenmi
@@ -82,69 +75,66 @@ def update_rent_book():
     """
     kirada olan kitapların gün takibi
     VE günü biten kitapların güncellenmesi
+    teslim günü geçen kitapların,geçen gün kadar kullanıcıya ceza işlenmesi
     """
     now=datetime.now()
 
-    books=mongo.book.find({})
-    # "end_time_rent":end_day("%d/%m/%Y")
-    
+    books=mongo.book.find({})#DB deki kitaplar
     for i in books:
-        if int(i["rent_time"])>0 and i["refound"] == "False": #burada kalan gün güncellemesi yapılır
+        if i["rent_time"] != "0": #kiralık olan kitapların gün güncellemesi 
             end_time=i["end_time_rent"]
-            end_time=datetime.strptime(end_time,"%d/%m/%Y")
-            "kitaplarda bululnan zamanları  datetine nesnesine çevrildi"
+            end_time=datetime.strptime(end_time,"%d/%m/%Y")#DB deki tarihi datetime nesnesine çevrilir
+            difference=end_time-now
+            mongo.book.update_one({"title":i["title"]},{"$set":{"rent_time":difference.days}})
+        
             
-            # start_time_rent=i["start_time_rent"]
-            # start_time_rent=datetime.strptime(start_time_rent,"%d/%m/%Y")
-            
-            difference=end_time-now # güncelleme için gün farkını alıyoruz
-            mongo.book.update_many({"title":i["title"]},{"$set":{"rent_time":difference.days}})
-            
-
-        elif int(i["rent_time"])==0 and i["refound"] == "True" or int(i["rent_time"])>0 and i["refound"] == "True":
+        if int(i["rent_time"])>0 or int(i["rent_time"])==0 and i["refound"] == "True":#teslim gününden önce veya teslim günü iade eden kullanıcıların güncellemesi
             new_add={"end_time_rent":"",
                      "start_time_rent":"",
                      "rent_time":"0",
-                     "rent_user":"",
-                     "refound":"False"}
-            mongo.book.update_many({"title":i["title"]},{"$set":new_add})
-        elif int(i["rent_time"])==0 and i["refound"] == "False":
+                     "rent_user":None,
+                     "refound":""}
+            mongo.book.update_one({"title":i["title"]},{"$set":new_add})
+        if int(i["rent_time"])< 0 and i["refound"] == "False": # kullanıcı eğer gününde teslim etmediyse geciken gün kadar ceza
+            end_time=i["end_time_rent"]
+            end_time=datetime.strptime(end_time,"%d/%m/%Y")
+            difference=end_time-now
             mongo.book.update_one({"pasaport_no":i["rent_user"]},{"$set":{"late_day":difference.days}})
         
         
-
+            
 def refound(book):
     from main import _online_user
     a,token=_online_user()
     user=mongo.token_user.find_one({"token":token}["pasaport_no"])
+    book=mongo.book.find_one({"title":book})
     if book["rent_user"] ==user:
-        if book["rent_time"] >0 or book["rent_time"] == 0:
-            mongo.book.update_one({"title":book["title"]}, {"$set":{"rent_time":"0",
-                                                                    "end_time_rent":"",
-                                                                    "start_time_rent":"",
-                                                                    "rent_user":"",
-                                                                    "refound":"True"}})
-        elif book["rent_time"] <0:
-            mongo.book.update_one({"title":book["title"]},{"$set":{"day_penalty":""}})
-
-
+        mongo.book.update_one({"title":book["title"]}, {"$set":{"refound":"True"}})
+                                                                
+        
        
-       
-        pass
-
-    
-    
-    pass
-
+            
 def update_rez_book():
-    now=datetime.now()
-    books=mongo.book.find({})
-
-    for i in books:
-        if  books["rez_start_time"]==now.strftime("%d/%m/%Y"):
-            pass
+    """
+    Eğer kitap kira durumu bitdiyse ve rezervasyonda bekleyen kullanıcı varsa
+    kitap kiralama durumu kullanıcıya geçer
+    """
     
-    pass
+    
+    now=datetime.now()
+    book=mongo.book.find({})
+
+    for i in book:
+        now = datetime.now()
+        end_day =now+timedelta(days=30)
+        if  i["rent_user"]== None and i["rez_user"] != None:
+            
+            mongo.book.update_one({"title":i["title"]},{"$set":{"rent_user":i["rez_user"],
+                                                                "rez_user":None,
+                                                                "rent_time":30,
+                                                                "start_time_rent":now.strftime("%d/%m/%Y"),
+                                                                "end_time_rent":end_day.strftime("%d/%m/%Y"),
+                                                                "refound":"False"}})
 
 
 def test_book():
@@ -173,7 +163,9 @@ def test_book():
 
 
 
-# mongo.book.update_many({}, {"$set": {"rez_user:""}})
+# mongo.book.update_many({},{"$set": {"refound":"True"}})
+                                    
+                                     
 # mongo.book.
 # a=mongo.book.find_one({"title":"Things Fall Apart"})
 # print(a)
@@ -183,3 +175,7 @@ def test_book():
 
 # if __name__=="__main__":
 #     app.run(debug=True)
+
+
+
+
