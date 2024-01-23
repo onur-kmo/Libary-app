@@ -10,11 +10,12 @@ import datetime
 """login yapılan kullanıcıyı tut 
 """
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb://localhost:27017/lib_base"
+# app.config["MONGO_URI"] = "mongodb://localhost:27017/lib_base"
+app.config["MONGO_URI"] = "mongodb+srv://onurkmo53:kmoonur.1999@onurkmo.9h9b3tx.mongodb.net/?retryWrites=true&w=majority"
+
 mongo = PyMongo(app).db
 secret_key="admin"
 app.secret_key="admin"
-
 
 
 @app.route("/")
