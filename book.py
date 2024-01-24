@@ -189,7 +189,3 @@ def test_book():
 #     print(i["title"])
 
 
-user_book=mongo.book.find({"rent_user":"43057138012"})
-
-if user_book == None:
-    print("götoldum")
