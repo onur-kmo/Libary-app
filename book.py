@@ -35,7 +35,7 @@ def rent_book(book):
     if a == True:
         book_rent= mongo.book.find_one({"title":book["title"]},{"_id":False})
         if int(book_rent["rent_time"]) == 0 :
-            mongo.book.update_many({"title":book["title"]},{"$set":{"rent_time":"30",
+            mongo.book.update_many({"title":book["title"]},{"$set":{"rent_time":30,
                                                                     "start_time_rent":now.strftime("%d/%m/%Y"),
                                                                     "end_time_rent":end_day.strftime("%d/%m/%Y"),
                                                                     "rent_user":user,
@@ -81,21 +81,29 @@ def update_rent_book():
 
     books=mongo.book.find({})#DB deki kitaplar
     for i in books:
-        if i["rent_time"] != "0": #kiralık olan kitapların gün güncellemesi 
+        if int(i["rent_time"]) != 0: #kiralık olan kitapların gün güncellemesi 
             end_time=i["end_time_rent"]
-            end_time=datetime.strptime(end_time,"%d/%m/%Y")#DB deki tarihi datetime nesnesine çevrilir
+            end_time=end_time=datetime.strptime(end_time,"%d/%m/%Y")#DB deki tarihi datetime nesnesine çevrilir
             difference=end_time-now
             mongo.book.update_one({"title":i["title"]},{"$set":{"rent_time":difference.days}})
         
             
-        if int(i["rent_time"])>0 or int(i["rent_time"])==0 and i["refound"] == "True":#teslim gününden önce veya teslim günü iade eden kullanıcıların güncellemesi
-            new_add={"end_time_rent":"",
+        if int(i["rent_time"])>=0 and i["refound"] == "True":#teslim gününden önce veya teslim günü iade eden kullanıcıların güncellemesi
+            new_add={"end_time_rent":"", #!!!! burda sıkınıt var kullanıcı kitap kiralıyo tekrar güncelleme yapılınca 0 lanıyor
                      "start_time_rent":"",
-                     "rent_time":"0",
+                     "rent_time":int(0),
                      "rent_user":None,
                      "refound":""}
             mongo.book.update_one({"title":i["title"]},{"$set":new_add})
-        if int(i["rent_time"])< 0 and i["refound"] == "False": # kullanıcı eğer gününde teslim etmediyse geciken gün kadar ceza
+        
+        elif int(i["rent_time"])<0 and i["refound"] == "True":#gecikmeli teslim eden kullanıcı
+            new_add={"end_time_rent":"",
+                     "start_time_rent":"",
+                     "rent_time":int(0),
+                     "rent_user":None,
+                     "refound":""}
+            mongo.book.update_one({"title":i["title"]},{"$set":new_add})
+        elif int(i["rent_time"])< 0 and i["refound"] == "False": # kullanıcı eğer gününde teslim etmediyse geciken gün kadar ceza
             end_time=i["end_time_rent"]
             end_time=datetime.strptime(end_time,"%d/%m/%Y")
             difference=end_time-now
@@ -176,6 +184,12 @@ def test_book():
 # if __name__=="__main__":
 #     app.run(debug=True)
 
+# a = mongo.book.find({})
+# for i in a:
+#     print(i["title"])
 
 
+user_book=mongo.book.find({"rent_user":"43057138012"})
 
+if user_book == None:
+    print("götoldum")

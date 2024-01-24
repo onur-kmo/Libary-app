@@ -36,25 +36,30 @@ def show_book():
 def rent_books():
     # from book import rent_book
     # a,books=rent_books()
-    bookss=mongo.book.find({})
+   
     from book import rent_book
     a,tokenn=_online_user()
     if a == True:
         if request.method=="POST":
-            form_book=request.form.get("book")
-            
-            book=mongo.book.find_one({"title":form_book})
-            true=rent_book(book=book)
-            
-            if true is not None:
-                return redirect(url_for("property_user"))
+            if request.form.get("rent_book"):
 
-
+                form_book=request.form.get("rent_book")
+                book=mongo.book.find_one({"title":form_book})
+                true=rent_book(book=book)
+                if true is not None:
+                    return redirect(url_for("property_user"))
+            elif request.form.get("reserve_book"):
+                pass
     else:
         return redirect(url_for("login"))
 
+    book=mongo.book.find({})#! burada 2 değişkenin olma sebebi html ye tek değişken gönderip 1 den fazla formda kullanınca her zaman 2. form ve sonra çalışmıyor
+    book2=mongo.book.find({})
+    return render_template("rent_book.html",rentbook=book,rezbook=book2)
+            
+            
 
-    return render_template("rent_book.html",books=bookss)
+
 
     
 
@@ -167,8 +172,12 @@ def property_user():
     if true == True:
         pasaport=mongo.token_user.find_one({"token":session["token"]},{"_id":False})
         user_info=mongo.users.find({"pasaport_no":pasaport["pasaport_no"]},{"_id":False})#eğer find_one yaparsan for la içinde sadece key dönersin
-        user_book=user_book=mongo.book.find_one({"rent_user":pasaport["pasaport_no"]})["title"]
         
+        # if mongo.book.find_one({"rent_user":pasaport["pasaport_no"]})is not None:# ["title] gibi eğer boş bir dosyaya indexlem yaparsan nonetype hatası alırsın
+        #     user_book=mongo.book.find({"rent_user":pasaport["pasaport_no"]})#sorgusuz gönderildiğinde none obje problemi yaşatıyor
+        # else:
+        #     user_book=None
+        user_book=mongo.book.find({"rent_user":pasaport["pasaport_no"]})
         if request.method=="POST":
             user_city=request.form.get("user_city")
             user_job=request.form.get("user_job")

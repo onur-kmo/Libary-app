@@ -15,8 +15,10 @@
 # #     "username":"onur",
 # #     "pass":"değişik_onur",
 
+onur=None
+if onur == None:
+    print("okey")
 
-user="onur"
 # # }
 
 

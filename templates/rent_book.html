@@ -5,53 +5,73 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LİB_APP</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-container {
+            width: 100%;
+            margin: 10px;
+            border-bottom: 4px solid #2202db; /* Alt kısmı çizen çizgi */
+            padding-bottom: 10px; /* Alt kısma biraz boşluk ekleyelim */
+        }
+
+        .right {
+            text-align: right;
+        }
+        
+        img.fixed {
+            position: fixed;
+            top: 20px;
+            right: 15px;
+        }
+    </style>
 </head>
 <body>
     <h1>Kitap Kiralama ve Rezervasyon</h1>
-    
-    <form method="post" action="/rent_books">
-        <ul>
-            <h3>kiralanabilir kitaplar</h3>
-                {% for kitap in books %}
-                    {% if kitap["rent_time"] != "0"  %}
+
+    <div class="form-container">
+        <form method="post" action="/rent_books">
+            <h3>Kiralık Kitaplar</h3>
+            <ul>
+                {% for kitap in rentbook %}
+                    {% if kitap["rent_time"] == 0  %}
                         <li>
-                        <strong>kitabın ismi: </strong> {{ kitap['title'] }} <br>-
-                        <strong>kitabın sayfası: </strong>{{ kitap['pages'] }}
-                        <br>- <strong>kitabın detayları: </strong>{{ kitap['link'] }} <br>
-                        <input type="checkbox" id="book_{{ loop.index }}" name="book" value="{{ kitap['title'] }}">
-                        <label for="book_{{ loop.index }}">kiralacanak kitabı seç</label>
-                        <button type="submit">Kitabı kirala</button>
+                            <strong>kitabın ismi: </strong> {{ kitap['title'] }} <br>-
+                            <strong>kitabın sayfası: </strong>{{ kitap['pages'] }}
+                            <br>- <strong>kitabın detayları: </strong>{{ kitap['link'] }} <br>
+                            <input type="checkbox" id="rent_book_{{ loop.index }}" name="rent_book" value="{{ kitap['title'] }}">
+                            <label for="rent_book_{{ loop.index }}">kiralacanak kitabı seç</label>
+                            
+                            <button type="submit">Kitabı kirala</button>
                         </li>
-                        
-                    {% else %}
-                    
                     {% endif %}
                 {% endfor %}
-           
-                            
-        </ul>
-        <ul>
-            <h3>Rezervasyon yapılabilir kitaplar</h3>
-            {% for kitap in books %}
-                {% if kitap["rent_time"] != "0" %}
-                <li>
-                    <strong>kitabın ismi: </strong> {{ kitap['title'] }} <br>-
-                    <strong>kitabın sayfası: </strong>{{ kitap['pages'] }}
-                    <br>- <strong>kitabın detayları: </strong>{{ kitap['link'] }} <br>
-                    <strong>kitabın kira süresi bitimi </strong>{{ kitap['end_time_rent'] }} <br>
-                    <input type="checkbox" id="book_{{ loop.index }}" name="book" value="{{ kitap['title'] }}">
-                    <label for="book_{{ loop.index }}">rezervasyon yapılacak kitabı seç</label>
-                    <button type="submit">Kitabı rezervasyon yap</button>
-                    </li>
-                {% endif %}
-                
-            {% endfor %}
-            
-        </ul>
-        
-    </form>
-    
+            </ul>
+        </form>
+    </div>
 
-    
+    <div class="form-container">
+        <form method="post" action="rent_books">
+            <h3>Rezervasyonlu Kitaplar</h3>
+            <ul>
+                {% for kitap in rezbook %}
+                    {% if kitap["rent_time"] > 0  %}
+                        <li>
+                            <strong>kitabın ismi: </strong> {{ kitap['title'] }} <br>-
+                            <strong>kitabın sayfası: </strong>{{ kitap['pages'] }}
+                            <br>- <strong>kitabın detayları: </strong>{{ kitap['link'] }} <br>
+                            <input type="checkbox" id="reserve_book_{{ loop.index }}" name="reserve_book" value="{{ kitap['title'] }}">
+                            <label for="reserve_book_{{ loop.index }}">rezerve edilecek kitabı seç</label>
+                            <button type="submit">Kitabı rezerve et</button>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </form>
+    </div>
 </body>
 </html>
