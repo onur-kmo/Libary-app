@@ -4,24 +4,25 @@ import jwt
 import datetime
      
 class lib_app(Flask):
+    """kütüphane uygulamasının main class
+    bu sınıfta tüm route lar bir fonksiyonun altında toplandı ve yeni gelecek routlar
+    bu fonksiyonun altında olucaklar,
+    """
     
-
+    
+    
     def __init__(self):
         self.app = Flask(__name__)
         self.app.config["MONGO_URI"] = "mongodb+srv://onurkmo53:kmoonur.1999@onurkmo.9h9b3tx.mongodb.net/lib_base"
         self.mongo = PyMongo(self.app).db
         self.app.secret_key = "admin"
-        self.jwt_key="admin"
+        self.jwt_key="admin" # token üretilirken kullanılan key
         self.Allroutes()
-        self.update_books()
+        self.update_books()#program çalıştığında tüm kitapların gün takibi 
+        self.online_user=""
+        """"""
   
-        
-    # app = Flask(__name__)
-    # app.config["MONGO_URI"] = "mongodb+srv://onurkmo53:kmoonur.1999@onurkmo.9h9b3tx.mongodb.net/lib_base"
-    # mongo = PyMongo(app).db
-    # secret_key="admin"
-    # app.secret_key="admin"
-
+    
     def Allroutes(self):
         
         @self.app.route("/")
@@ -175,11 +176,6 @@ class lib_app(Flask):
             if true == True:
                 pasaport=self.mongo.token_user.find_one({"token":session["token"]},{"_id":False})
                 user_info=self.mongo.users.find({"pasaport_no":pasaport["pasaport_no"]},{"_id":False})#eğer find_one yaparsan for la içinde sadece key dönersin
-                
-                # if mongo.book.find_one({"rent_user":pasaport["pasaport_no"]})is not None:# ["title] gibi eğer boş bir dosyaya indexlem yaparsan nonetype hatası alırsın
-                #     user_book=mongo.book.find({"rent_user":pasaport["pasaport_no"]})#sorgusuz gönderildiğinde none obje problemi yaşatıyor
-                # else:
-                #     user_book=None
                 user_book=self.mongo.book.find({"rent_user":pasaport["pasaport_no"]})
                 if request.method=="POST":
                     user_city=request.form.get("user_city")
@@ -243,11 +239,7 @@ if __name__ == "__main__":
     
     
 
-# if __name__=="__main__":
-#     from book import update_rent_book,update_rez_book
-#     update_rent_book()
-#     update_rez_book()
-#     app.run(debug=True)
+
     
     
     
