@@ -45,26 +45,26 @@
 
         <input type="submit" value="GÖNDER"><br><br>
 
+    </form>
         <p class="center">
             {% if login == True %}
-                {% for user in user_info %}
-                    Telefon Numarası: <strong>{{user["phone"]}}</strong><br>
-                    Mail Adresi: <strong>{{user["mail"]}}</strong><br>
+            {% for user in user_info %}
+            Telefon Numarası: <strong>{{user["phone"]}}</strong><br>
+            Mail Adresi: <strong>{{user["mail"]}}</strong><br>
                     Yaşadığınız Şehir: <strong>{{user["city"]}}</strong><br>
                     Mesleğiniz: <strong>{{user["job"]}}</strong><br>
                 {% endfor %}
             {% endif %}
         </p><br>
 
-        <strong>Kiraladığınız Kitaplar:</strong>
-        <form action="/refound" method="post">
-            {% for book in user_book %}
-                {% if book != None %}
-                    <li>{{book["title"]}}<input type="checkbox" name="refound" id="refound_{{ loop.index }}"></li>
-                    <button type="submit" for="refound_{{ loop.index }}">Kitabı İade Et</button>
-                {% endif %}
-            {% endfor %}
-        </form>
+    <strong class="center">Kiraladığınız Kitaplar:</strong>
+    <form action="/refound" method="post" class="center">
+        {% for book in user_book %}
+            {% if book != None %}
+                <li>{{book["title"]}}<input type="checkbox" name="refound" id="refound_{{ loop.index }}"value="{{ book['title'] }}"></li>
+                <button type="submit" for="refound_{{ loop.index }}">Kitabı İade Et</button>
+            {% endif %}
+        {% endfor %}
     </form>
 
     <a href="{{url_for('home')}}">Ana Sayfaya Dön</a><br>

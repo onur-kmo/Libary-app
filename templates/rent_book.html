@@ -29,6 +29,7 @@
             right: 15px;
         }
     </style>
+    
 </head>
 <body>
     <h1>Kitap Kiralama ve Rezervasyon</h1>
@@ -55,18 +56,19 @@
     </div>
 
     <div class="form-container">
-        <form method="post" action="rent_books">
+        <form method="post" action="rez_books">
             <h3>Rezervasyonlu Kitaplar</h3>
             <ul>
                 {% for kitap in rezbook %}
-                    {% if kitap["rent_time"] > 0  %}
+                    {% if kitap["refound"] =="False" and kitap["rez_user"] == None  %}
                         <li>
                             <strong>kitabın ismi: </strong> {{ kitap['title'] }} <br>-
                             <strong>kitabın sayfası: </strong>{{ kitap['pages'] }}
                             <br>- <strong>kitabın detayları: </strong>{{ kitap['link'] }} <br>
-                            <input type="checkbox" id="reserve_book_{{ loop.index }}" name="reserve_book" value="{{ kitap['title'] }}">
-                            <label for="reserve_book_{{ loop.index }}">rezerve edilecek kitabı seç</label>
-                            <button type="submit">Kitabı rezerve et</button>
+                            <strong>kitabın kira bitiş tarihi : </strong>{{ kitap['end_time_rent'] }} <br>
+                            <input type="submit" id="reserve_book_{{ loop.index }}" name="reserve_book" value="{{ kitap['title'] }}">
+                            <label for="reserve_book">rezerve edilecek kitabı seç</label>
+                            
                         </li>
                     {% endif %}
                 {% endfor %}

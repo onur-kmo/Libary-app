@@ -16,6 +16,7 @@ app.config["MONGO_URI"] = "mongodb+srv://onurkmo53:kmoonur.1999@onurkmo.9h9b3tx.
 mongo = PyMongo(app).db
 
 
+
 def show_books():
     """
     kitaplar tümüyle uygulamada gösterilip 
@@ -27,8 +28,9 @@ def show_books():
     
     
 def rent_book(book):
-    from main import _online_user
-    a,token=_online_user()
+    from main import lib_app
+    app=lib_app()
+    a,token=app._online_user()
     user=mongo.token_user.find_one({"token":token})["pasaport_no"]
     now = datetime.now()
     end_day=now+timedelta(days=30)
@@ -52,12 +54,15 @@ def rez_book(rez_book):
     fonksiyona, kiralama sayfasından gelen string değeri data base de eşleştirip
     eşleşen kitabı yeni bir değişken ile tanımlayıp, veri güncellemesi.
     """
-    from main import _online_user
-    a,token=_online_user
+    from main import lib_app
+    app=lib_app()
+    a,token=app._online_user()
     user=mongo.token_user.find_one({"token":token})["pasaport_no"]
     book=mongo.book.find_one({"title":rez_book})#html den gelen string DB de eşleşip, yeni bir değişken 
     if book["rent_user"] != None:
         mongo.book.update_one({"title":book["title"]},{"$set":{"rez_user":user}})
+        update_rent_book()
+        update_rez_book()
         return True
     else:
         return False
@@ -112,14 +117,18 @@ def update_rent_book():
         
             
 def refound(book):
-    from main import _online_user
-    a,token=_online_user()
-    user=mongo.token_user.find_one({"token":token}["pasaport_no"])
+    from main import lib_app
+    app=lib_app()
+    a,token=app._online_user()
+    user=mongo.token_user.find_one({"token":token})["pasaport_no"]
     book=mongo.book.find_one({"title":book})
     if book["rent_user"] ==user:
         mongo.book.update_one({"title":book["title"]}, {"$set":{"refound":"True"}})
-                                                                
-        
+        update_rent_book()
+        update_rez_book()
+    else:
+        return False                         
+    
        
             
 def update_rez_book():
@@ -145,47 +154,6 @@ def update_rez_book():
                                                                 "refound":"False"}})
 
 
-def test_book():
-    pass
-    # asıl="onur"
-    # user="user"+asıl
-    # a= mongo.book.find({},{"_id":False})
-    # mongo.book.update_one({"title":"fairy TALES deneme"},{"$set":{"where":user}})
-    # print(a)
-    # for  document in a:
-        
-    #     pprint.pprint(document)    
-    
-    
-    # return mongo.book.update_many({}, {"$set": {"rent_time":"Available"}})
-
-    #veri kümesini güncelleme
-
-    # filter_query = {'username': 'kullaniciAdi'}
-    # update_query = {'$set': {'yeniAlan': 'yeniDeger'}}
-
-    # result = collection.update_one(filter_query, update_query)
-    
-    
-# test_book()
 
 
-
-# mongo.book.update_many({},{"$set": {"refound":"True"}})
-                                    
-                                     
-# mongo.book.
-# a=mongo.book.find_one({"title":"Things Fall Apart"})
-# print(a)
-# if int(a["rent_time"]) == 0:
-#     mongo.book.update_one({"title":a["title"]},{"$set": {"rent_time":"5"}})
-
-
-# if __name__=="__main__":
-#     app.run(debug=True)
-
-# a = mongo.book.find({})
-# for i in a:
-#     print(i["title"])
-
-
+# mongo.token_user.create_index("expireAt", expireAfterSeconds=3600)
