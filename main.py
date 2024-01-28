@@ -2,6 +2,8 @@ from flask import Flask,render_template,request,redirect,url_for,session
 from flask_pymongo import PyMongo
 import jwt
 import datetime
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
      
 class lib_app(Flask):
     """kütüphane uygulamasının main class
@@ -17,18 +19,38 @@ class lib_app(Flask):
         self.mongo = PyMongo(self.app).db
         self.app.secret_key = "admin"
         self.jwt_key="admin" # token üretilirken kullanılan key
+        self.fastapi = FastAPI()
         self.Allroutes()
         self.update_books()#program çalıştığında tüm kitapların gün takibi 
-        self.online_user=""
-        """"""
+        # self.app_logout()
+        self.online_user=""#şuan boşta burası session gibi çalışacak sistem olucak
+        
   
     
     def Allroutes(self):
         
         @self.app.route("/")
         def home():
-            return render_template("home.html")
+            check,a=self._online_user()
+            if check == True:
+                user=self.mongo.token_user.find_one({"token":a})["username"]  
+                return render_template("afterLogin.html",user=user,login=True)
+            elif check == False:
+                self.app_logout()
+                return  render_template("home.html")
+
+
         
+        @self.app.route("/home_page/<string:user>/<string:login>")
+        def home_page(user,login):
+            """kullanıcı  giriş yaptıkdan sonraki ana sayfa
+            """
+            return render_template("afterLogin.html",user=user,login=login)
+            
+        
+        @self.fastapi.get("/fastapi_endpoint")
+        def fastapi_endpoint():
+            return {"message":"hello from Fastapi endpoint"}
 
         @self.app.route("/book")
         def show_book():
@@ -92,7 +114,7 @@ class lib_app(Flask):
                             
                             """giriş yapıldıktan sonra token oluşturulacak
                             """
-                            return redirect(url_for('home',login=True,user=user_name)),token_user(loginuser=login_user,pasaport=user_pasaport)
+                            return redirect(url_for('home_page',login=True,user=user_name)),token_user(loginuser=login_user,pasaport=user_pasaport)
                             
 
                     else:
@@ -197,11 +219,12 @@ class lib_app(Flask):
                         
             return render_template("add_user_property.html",user_book=user_book,user_info=user_info,login=True)
 
-        @self.app.route('/logout')
+        @self.app.route("/logout")
         def logout():
-            session.pop("token",None)
-            return redirect(url_for('home'))
-            
+            self.app_logout()
+            return redirect(url_for("home"))
+                
+        
 
     def check_users(self,pasaport,username,pswd):
         """
@@ -219,8 +242,15 @@ class lib_app(Flask):
                 return True
         else:
             return False
+
+
+    def app_logout(self):
+        return session.pop("token",None)
     
+
     def _online_user(self):
+        """online olan kullanıcı 
+        """
         if "token" in session:
             if self.mongo.token_user.find_one({"token":session["token"]}) is not None:
                 return True , self.mongo.token_user.find_one({"token":session["token"]})["token"]
@@ -228,14 +258,35 @@ class lib_app(Flask):
                 return False,False
         else:
             return False,False
-    
+                
+        
+
     def update_books(self):
         from book import update_rent_book,update_rez_book
         update_rez_book()
         update_rent_book()
+    
+    def RunApps(self):
+        """program start
+        program çalıştığında flask ve fastAPİ çalışacak
+        """
+        from threading import Thread
+        def run_flask():
+            self.app.run(debug=True)
+        def run_Fastapi():#şuan flask sunucusu kapatıldığında çalışıyor problem çözülmedi   ikisi farklı portlarda çalışması gerek
+            import uvicorn
+            uvicorn.run(self.fastapi,host="127.0.0.1",port=8001)
+
+        flask_thread=Thread(target=run_flask())
+        fastapi_thread=Thread(target=run_Fastapi())
+        flask_thread.start()
+        fastapi_thread.start()
+        
 if __name__ == "__main__":
-    libary = lib_app()
-    libary.app.run(debug=True)
+    libary = lib_app()  
+    libary.RunApps()
+
+    
     
     
 
