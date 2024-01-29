@@ -1,38 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LİB_APP</title>
+{%extends"lyout.html"%}
+
+{% block title %}LİB_APP{% endblock %}
+
+
+{% block content %}
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2202db;
         }
 
         .form-container {
-            width: 100%;
-            margin: 10px;
-            border-bottom: 4px solid #2202db; /* Alt kısmı çizen çizgi */
-            padding-bottom: 10px; /* Alt kısma biraz boşluk ekleyelim */
+            width: 80%;
+            margin: 20px auto;
+            border: 2px solid #2202db;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #fff;
         }
 
-        .right {
-            text-align: right;
+        ul {
+            list-style-type: none;
+            padding: 0;
         }
-        
-        img.fixed {
-            position: fixed;
-            top: 20px;
-            right: 15px;
+
+        li {
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+
+        label {
+            margin-left: 10px;
+        }
+
+        button {
+            background-color: #2202db;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
-    
-</head>
-<body>
-    <h1>Kitap Kiralama ve Rezervasyon</h1>
 
     <div class="form-container">
         <form method="post" action="/rent_books">
@@ -41,13 +56,12 @@
                 {% for kitap in rentbook %}
                     {% if kitap["rent_time"] == 0  %}
                         <li>
-                            <strong>kitabın ismi: </strong> {{ kitap['title'] }} <br>-
-                            <strong>kitabın sayfası: </strong>{{ kitap['pages'] }}
-                            <br>- <strong>kitabın detayları: </strong>{{ kitap['link'] }} <br>
+                            <strong>Kitabın İsmi:</strong> {{ kitap['title'] }} <br>
+                            <strong>Kitabın Sayfası:</strong> {{ kitap['pages'] }} <br>
+                            <strong>Kitabın Detayları:</strong> {{ kitap['link'] }} <br>
                             <input type="checkbox" id="rent_book_{{ loop.index }}" name="rent_book" value="{{ kitap['title'] }}">
-                            <label for="rent_book_{{ loop.index }}">kiralacanak kitabı seç</label>
-                            
-                            <button type="submit">Kitabı kirala</button>
+                            <label for="rent_book_{{ loop.index }}">Kiralacak Kitabı Seç</label>
+                            <button type="submit">Kitabı Kirala</button>
                         </li>
                     {% endif %}
                 {% endfor %}
@@ -62,18 +76,16 @@
                 {% for kitap in rezbook %}
                     {% if kitap["refound"] =="False" and kitap["rez_user"] == None  %}
                         <li>
-                            <strong>kitabın ismi: </strong> {{ kitap['title'] }} <br>-
-                            <strong>kitabın sayfası: </strong>{{ kitap['pages'] }}
-                            <br>- <strong>kitabın detayları: </strong>{{ kitap['link'] }} <br>
-                            <strong>kitabın kira bitiş tarihi : </strong>{{ kitap['end_time_rent'] }} <br>
+                            <strong>Kitabın İsmi:</strong> {{ kitap['title'] }} <br>
+                            <strong>Kitabın Sayfası:</strong> {{ kitap['pages'] }} <br>
+                            <strong>Kitabın Detayları:</strong> {{ kitap['link'] }} <br>
+                            <strong>Kiralama Bitiş Tarihi:</strong> {{ kitap['end_time_rent'] }} <br>
                             <input type="submit" id="reserve_book_{{ loop.index }}" name="reserve_book" value="{{ kitap['title'] }}">
-                            <label for="reserve_book">rezerve edilecek kitabı seç</label>
-                            
+                            <label for="reserve_book">Rezerve Edilecek Kitabı Seç</label>
                         </li>
                     {% endif %}
                 {% endfor %}
             </ul>
         </form>
     </div>
-</body>
-</html>
+{% endblock %}

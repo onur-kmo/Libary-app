@@ -1,25 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <ol>
-        
-        {% for show in books %}
-        
-        <li>
-            
-            kitabın adı: {{show["title"]}}---- kitabın dili: {{show["language"]}}---
-            kitap sayfası: {{show["pages"]}}----
-            kitabın yazarı: {{show["author"]}}----
-            kitap nerede: {{show["where"]}}
-        </li><br>
-        {% endfor %}
-    </ol>
+{%extends"lyout.html"%}
+
+
     
-  
-</body>
-</html>
+
+
+{% block content %}
+<style>
+    .center{
+        text-align: center;
+    }
+</style>
+<div class="container mt-4">
+    <h1 class="center">Kütüphanede bulunan Kitap Listesi</h1>
+
+    {% if books %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Kitap Adı</th>
+                    <th scope="col">Kitap Dili</th>
+                    <th scope="col">Kitap Sayfası</th>
+                    <th scope="col">Kitap Yazarı</th>
+                    <th scope="col">kitap detayı</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for show in books %}
+                    <tr>
+                        <td>{{ show["title"] }}</td>
+                        <td>{{ show["language"] }}</td>
+                        <td>{{ show["pages"] }}</td>
+                        <td>{{ show["author"] }}</td>
+                        <td><a href="{{ show['link'] }}" target="_blank">Detay</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Henüz kitap bulunmamaktadır.</p>
+    {% endif %}
+</div>
+{% endblock content %}
