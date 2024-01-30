@@ -1,5 +1,27 @@
 {%extends"lyout.html"%}
 
+
+
+{%block user%}
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            KULLANICI İŞLEMLERİ
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="{{url_for('property_user')}}" class="btn btn-info">Kulannıcı Bilgileri</a></li>
+            <a href="{{url_for('rent_books')}}" class="btn btn-warning">Kitap Kiralama</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+        </ul>
+    </li>
+{%endblock user%}
+
+{%block logout%}
+    <li class="nav-item">
+        <a href="{{url_for('logout')}}" class="btn btn-danger">Logout</a>
+    </li>
+{%endblock logout%}
+
 {% block content %}
 
 <div class="container mt-4">

@@ -3,7 +3,8 @@ from flask_pymongo import PyMongo
 import jwt
 import datetime
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+
+
      
 class lib_app(Flask):
     """kütüphane uygulamasının main class
@@ -23,14 +24,19 @@ class lib_app(Flask):
         self.Allroutes()
         self.update_books()#program çalıştığında tüm kitapların gün takibi 
         # self.app_logout()
-        self.online_user=""#şuan boşta burası session gibi çalışacak sistem olucak
+        self.online_user=None#şuan boşta burası session gibi çalışacak sistem olucak
         
   
+    
     
     def Allroutes(self):
         
         @self.app.route("/")
         def home():
+            """home page
+            hali hazırda login varsa after_login sayfasına yönlendirecek  yoksa home.html
+            """
+            
             check,a=self._online_user()
             if check == True:
                 user=self.mongo.token_user.find_one({"token":a})["username"]  
@@ -59,8 +65,9 @@ class lib_app(Flask):
             book.py den kitapları gösteren fonksiyonunu çağırır
             !!!! book.py deki ismi show_books dikkat et
             """
+            self._online_user()
             show= show_books()
-            return render_template("show_book.html",books=show)
+            return render_template("show_book.html",books=show,users=self.online_user )
 
 
         @self.app.route("/rez_books",methods=["POST"])
@@ -114,7 +121,7 @@ class lib_app(Flask):
                             
                             """giriş yapıldıktan sonra token oluşturulacak
                             """
-                            return redirect(url_for('home_page',login=True,user=user_name)),token_user(loginuser=login_user,pasaport=user_pasaport)
+                            return redirect(url_for('home_page',login=True,user=user_name)),self.token_user(loginuser=login_user,pasaport=user_pasaport)
                             
 
                     else:
@@ -124,29 +131,6 @@ class lib_app(Flask):
             return render_template("login.html")
         
 
-        def token_user(loginuser,pasaport):
-            """
-            !!!!token oluştururken _id alınmıyor
-            giriş yapan kullanıcı için token oluşturulacak ve DB ye gönderilecek
-            eğer DB de aynı pasaporta uygun token duruyorsa oluşturulmadan DBdeki hazır 
-            tokeını kullancak
-            token lar 1 saat süreden sonra kendisini silecek ve kullanıcı yeniden login işlemi yapmak zorunda
-            """
-            
-            ttl_duration = 3600 #second
-            current_time=datetime.datetime.now()
-            expire_time = current_time + datetime.timedelta(seconds=ttl_duration)
-            username=loginuser["username"]
-            
-            if  self.mongo.token_user.find_one({"pasaport_no":pasaport}) != None:
-                user=self.mongo.token_user.find_one({"pasaport_no": pasaport},{"token":True,"_id":False})["token"]
-                session["token"]=user
-            
-                
-            else:
-                user_token=jwt.encode(loginuser,self.jwt_key,algorithm = "HS256")
-                session["token"]=user_token
-                self.mongo.token_user.insert_one({"username":username,"pasaport_no":pasaport,"token":user_token,'timestamp': current_time,'expireAt': expire_time})
                 
         @self.app.route("/register",methods=["GET","POST"])
         def register():
@@ -159,12 +143,16 @@ class lib_app(Flask):
             """
             if request.method=="POST":
                 new_user_name=request.form.get("new_user_name")
+                new_user_surname=request.form.get("new_user_surname")
                 new_user_pass=request.form.get("new_user_pass")
                 new_user_pasaport=request.form.get("new_user_pasaport")
-                chek=self.check_users(pasaport=new_user_pasaport,username=new_user_name,pswd=new_user_pass)
+                chek=self.check_users(pasaport=new_user_pasaport,username=new_user_name,pswd=new_user_pass,surname=new_user_surname)
                 
                 if chek == False:
-                    self.mongo.users.insert_one({"pasaport_no":new_user_pasaport,"username":new_user_name,"password":new_user_pass})
+                    self.mongo.users.insert_one({"pasaport_no":new_user_pasaport,
+                                                 "username":new_user_name,#kullanıcı kayıt
+                                                 "password":new_user_pass,
+                                                 "surname":new_user_surname})
                     user=True
                     return render_template("register.html",user=user)
                 elif chek==True:
@@ -223,16 +211,44 @@ class lib_app(Flask):
         def logout():
             self.app_logout()
             return redirect(url_for("home"))
+       
+    def token_user(self,loginuser,pasaport):
+        """
+        !!!!token oluştururken _id alınmıyor
+        giriş yapan kullanıcı için token oluşturulacak ve DB ye gönderilecek
+        eğer DB de aynı pasaporta uygun token duruyorsa oluşturulmadan DBdeki hazır 
+        tokeını kullancak
+        token lar 1 saat süreden sonra kendisini silecek ve kullanıcı yeniden login işlemi yapmak zorunda
+        """
+            
+        ttl_duration = 3600 #second
+        current_time=datetime.datetime.now()
+        expire_time = current_time + datetime.timedelta(seconds=ttl_duration)
+        username=loginuser["username"]
+            
+        if  self.mongo.token_user.find_one({"pasaport_no":pasaport}) != None:
+            user=self.mongo.token_user.find_one({"pasaport_no": pasaport},
+                                                {"token":True,"_id":False})["token"]
+            session["token"]=user
+            
                 
+        else:
+            user_token=jwt.encode(loginuser,self.jwt_key,algorithm = "HS256")
+            session["token"]=user_token
+            self.mongo.token_user.insert_one({"username":username,
+                                              "pasaport_no":pasaport,
+                                              "token":user_token,
+                                              'timestamp': current_time,
+                                              'expireAt': expire_time})
         
 
-    def check_users(self,pasaport,username,pswd):
+    def check_users(self,pasaport,username,pswd,surname):
         """
         register dan gelen 3 bilgiyi data base de sorgu olarak alıyoruz
         önce pasaport kontrol den sonra bilgilerin hepsi gelip 
         aynı tc ile farklı kullanıcı adı ile yeniden kullanıcı oluşturulmaması için 
         DB den gelen bilgilerle USER dan gelen bilgiler karşılaştırılıp eğer aynı değilse
-            sonuç olarak  TRUE ve FALSE döndürüyor
+        sonuç olarak  TRUE ve FALSE döndürüyor
             DİPNOT: eğer "find_one" DB de sorguya karşılık veri  bulamıyorsa NONE gönderiyor
         """
         user_cont =  self.mongo.users.find_one({'pasaport_no': pasaport})
@@ -245,16 +261,26 @@ class lib_app(Flask):
 
 
     def app_logout(self):
+        self.online_user=None
         return session.pop("token",None)
     
+
+    # def check_token_expire(self, token_data):
+    #     """Token'ın süresinin dolup dolmadığını kontrol eder."""
+    #     current_time = datetime.now()
+    #     expire_time = datetime.fromtimestamp(token_data["exp"])
+    #     return current_time < expire_time    burası süresi dolan token ları belirleyip logout yaptıracak
 
     def _online_user(self):
         """online olan kullanıcı 
         """
         if "token" in session:
-            if self.mongo.token_user.find_one({"token":session["token"]}) is not None:
-                return True , self.mongo.token_user.find_one({"token":session["token"]})["token"]
+            if self.mongo.token_user.find_one({"token":session["token"]}) is not None:#session da token key olup  value si olmuyor
+                user=self.mongo.token_user.find_one({"token":session["token"]})
+                self.online_user=True
+                return True , user["token"]
             else:
+                self.app_logout()
                 return False,False
         else:
             return False,False
@@ -273,20 +299,18 @@ class lib_app(Flask):
         from threading import Thread
         def run_flask():
             self.app.run(debug=True)
-        def run_Fastapi():#şuan flask sunucusu kapatıldığında çalışıyor problem çözülmedi   ikisi farklı portlarda çalışması gerek
-            import uvicorn
-            uvicorn.run(self.fastapi,host="127.0.0.1",port=8001)
 
         flask_thread=Thread(target=run_flask())
-        fastapi_thread=Thread(target=run_Fastapi())
         flask_thread.start()
-        fastapi_thread.start()
+   
+        
+        
         
 if __name__ == "__main__":
     libary = lib_app()  
     libary.RunApps()
 
-    
+   
     
     
 

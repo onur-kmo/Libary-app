@@ -1,7 +1,41 @@
 {%extends"lyout.html"%}
 
 
+{% block user %}
+    {% if users == True %}
+        
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                KULLANICI İŞLEMLERİ
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="{{url_for('property_user')}}" class="btn btn-info">Kulannıcı Bilgileri</a></li>
+                <a href="{{url_for('rent_books')}}" class="btn btn-warning">Kitap Kiralama</a></li>
+            </ul>
+        </li>
+       
+    {% elif users == None %}
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Giriş yap/ Kaydol
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="{{url_for('login')}}" class="btn btn-success">Giriş Yap</a></li>
+                <a href="{{url_for('register')}}" class="btn btn-secondary">Kayıt ol</a></li>
+            </ul>
+        </li>
+    {% endif %}
+{% endblock user %}
+
+{%block logout%}
+    {% if users == True %}
+        <li class="nav-item">
+            <a href="{{url_for('logout')}}" class="btn btn-danger">Logout</a>
+        </li>
+        {% endif %}
+{%endblock logout%}
     
+
 
 
 {% block content %}

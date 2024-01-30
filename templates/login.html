@@ -1,58 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>libary APP</title>
-    <style>
-        .center{
-            text-align: center;
-        }
-        .end{
-            text-align: end;
-        }
-        .justify{
-            text-align: justify;
-        }
-        .left{
-            text-align: left;
-        }
-        .start{
-            text-align: start;
-        }
-        
-        .error-message {
-            color: red;
-        }
-         /* Chrome, Safari, Edge, Opera */
-         input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-        }
+{%extends"lyout.html"%}
 
-    </style>
-</head>
-<body>
-   <h1 class="center">Kütüphane login sayfası </h1><br>
-   <form action="/login" method="POST">  
+{%block user%}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Giriş yap/ Kaydol
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{url_for('login')}}" class="btn btn-success">Giriş Yap</a></li>
+                        <a href="{{url_for('register')}}" class="btn btn-secondary">Kayıt ol</a></li>
+                        
+                    </ul>
+                </li>
+                        
+{%endblock user%}
+
+{% block content %}
+<div class="container login-container">
+    <h1 class="text-center mb-4">Library App Login</h1>
+    <form action="/login" method="POST">
+        <div class="mb-3">
+            <label for="pasaport_no" class="form-label">Tc No:</label>
+            <input type="tel"  name="pasaport_no" class="form-control" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="11" pattern="\d{11}" title="Tc No nuzu giriniz" required>
+        </div>
         
-       <label for="user_pasaport">Tc No: </label><br>
-       <input type="number" name="pasaport_no" pattern="\d{11}" title="11 haneli bir sayı girin"> <br>
-       
-       <label for="user_name">Kullanıcı Adınız: </label> <br>
-       <input type="text" name="user_name"><br>
-       
-       <label for="password">şifreniz: </label><br>
-       <input type="password" name="user_pass"><br>
-       
-       <button type="submit"><strong>LOGİN</strong> </button><br><br>
-       <a href="{{url_for('register')}}">if you dont have an account Sign UP</a>
-        
-        {% if eror %}
-            <p>kullanıcı adı veya parola yanlış</p>
+        <div class="mb-3">
+            <label for="user_name" class="form-label">Kullanıcı Adınız:</label>
+            <input type="text" class="form-control" name="user_name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="user_pass" class="form-label">Şifreniz:</label>
+            <input type="password" class="form-control" name="user_pass" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+        <small class="d-block mt-2">
+            <a href="{{url_for('register')}}">If you don't have an account, Sign Up</a>
+        </small>
+
+        {% if error %}
+            <p class="mt-3 error-message">Kullanıcı adı veya parola yanlış</p>
         {% endif %}
-        
-   
-</body>
-</html>
+    </form>
+</div>
+{% endblock %}
