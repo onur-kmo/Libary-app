@@ -3,8 +3,9 @@ from flask_pymongo import PyMongo
 import jwt
 import datetime
 from fastapi import FastAPI
-
-
+from dotenv import load_dotenv
+import os
+load_dotenv()
      
 class lib_app(Flask):
     """kütüphane uygulamasının main class
@@ -16,7 +17,7 @@ class lib_app(Flask):
     
     def __init__(self):
         self.app = Flask(__name__)
-        self.app.config["MONGO_URI"] = "mongodb+srv://onurkmo53:kmoonur.1999@onurkmo.9h9b3tx.mongodb.net/lib_base"
+        self.app.config["MONGO_URI"] = os.getenv("mongo_uri")
         self.mongo = PyMongo(self.app).db
         self.app.secret_key = "admin"
         self.jwt_key="admin" # token üretilirken kullanılan key
@@ -211,7 +212,7 @@ class lib_app(Flask):
         def logout():
             self.app_logout()
             return redirect(url_for("home"))
-       
+      
     def token_user(self,loginuser,pasaport):
         """
         !!!!token oluştururken _id alınmıyor
