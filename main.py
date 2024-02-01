@@ -19,8 +19,8 @@ class lib_app(Flask):
         self.app = Flask(__name__)
         self.app.config["MONGO_URI"] = os.getenv("mongo_uri")
         self.mongo = PyMongo(self.app).db
-        self.app.secret_key = "admin"
-        self.jwt_key="admin" # token üretilirken kullanılan key
+        self.app.secret_key = os.getenv("secret_key")
+        self.jwt_key=  os.getenv("jwt_key")# token üretilirken kullanılan key
         self.fastapi = FastAPI()
         self.Allroutes()
         self.update_books()#program çalıştığında tüm kitapların gün takibi 
@@ -48,11 +48,11 @@ class lib_app(Flask):
 
 
         
-        @self.app.route("/home_page/<string:user>/<string:login>")
-        def home_page(user,login):
-            """kullanıcı  giriş yaptıkdan sonraki ana sayfa
-            """
-            return render_template("afterLogin.html",user=user,login=login)
+        # @self.app.route("/home_page/<string:user>/<string:login>")
+        # def home_page(user,login):
+        #     """kullanıcı  giriş yaptıkdan sonraki ana sayfa
+        #     """
+        #     return render_template("afterLogin.html",user=user,login=login)
             
         
         @self.fastapi.get("/fastapi_endpoint")
@@ -122,7 +122,7 @@ class lib_app(Flask):
                             
                             """giriş yapıldıktan sonra token oluşturulacak
                             """
-                            return redirect(url_for('home_page',login=True,user=user_name)),self.token_user(loginuser=login_user,pasaport=user_pasaport)
+                            return redirect(url_for('home',login=True,user=user_name)),self.token_user(loginuser=login_user,pasaport=user_pasaport)
                             
 
                     else:

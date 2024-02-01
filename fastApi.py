@@ -11,7 +11,7 @@ flask_app = flask_lib_app.app
 fastapi_app = FastAPI()
 
 # Flask uygulamasını FastAPI uygulamasına monte et
-fastapi_app.mount("/api", WSGIMiddleware(flask_app))
+fastapi_app.mount("/", WSGIMiddleware(flask_app))
 
 # FastAPI endpoint
 @fastapi_app.get("/fastapi_endpoint")
