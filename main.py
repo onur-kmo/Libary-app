@@ -5,16 +5,28 @@ import datetime
 from fastapi import FastAPI
 from dotenv import load_dotenv
 import os
+# from flask_oauthlib.client import OAuth
+from google_auth_oauthlib.flow import Flow
 load_dotenv()
-     
+
+
 class lib_app(Flask):
     """kütüphane uygulamasının main class
     bu sınıfta tüm route lar bir fonksiyonun altında toplandı ve yeni gelecek routlar
     bu fonksiyonun altında olucaklar,
     """
     
+    client_secret_file="client_secret.json"
     
-    
+    """ scopes
+    #kullanıcının email ve herkese açık profili ele alınır   
+    daha fazlasıhttps://developers.google.com/identity/protocols/oauth2/scopes?hl=tr
+    """
+    flow=Flow.from_client_secrets_file(client_secrets_file=client_secret_file,
+                                       scopes=["https://www.googleapis.com/auth/userinfo.email","https://www.googleapis.com/auth/userinfo.profile","Openid" ],
+                                       redirect_uri="http://127.0.0.1:8000/callback" )
+                                        
+
     def __init__(self):
         self.app = Flask(__name__)
         self.app.config["MONGO_URI"] = os.getenv("mongo_uri")
@@ -22,11 +34,31 @@ class lib_app(Flask):
         self.app.secret_key = os.getenv("secret_key")
         self.jwt_key=  os.getenv("jwt_key")# token üretilirken kullanılan key
         self.fastapi = FastAPI()
+        self.google_secret=os.getenv("GOOGLE_CLIENT_ID")
+        self.client_secret_file="client_secret.json"
+        self.flow=Flow.from_client_secrets_file(client_secrets_file=self.client_secret_file,
+                                       scopes=["https://www.googleapis.com/auth/userinfo.email","https://www.googleapis.com/auth/userinfo.profile","Openid" ],
+                                       redirect_uri="http://127.0.0.1:8000/callback" )
         self.Allroutes()
         self.update_books()#program çalıştığında tüm kitapların gün takibi 
         # self.app_logout()
         self.online_user=None#şuan boşta burası session gibi çalışacak sistem olucak
-        
+        # self.oauth = OAuth(self.app)
+        # self.google = self.oauth.remote_app(
+        #     'google',
+        #     consumer_key=os.getenv('GOOGLE_CLIENT_ID'),
+        #     consumer_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
+        #     request_token_params={
+        #         'scope': 'email',
+        #     },
+        #     base_url='https://www.googleapis.com/oauth2/v1/',
+        #     authorize_url='https://accounts.google.com/o/oauth2/auth',
+        #     authorize_params=None,
+        #     request_token_url=None,
+        #     access_token_method='POST',
+        #     access_token_url='https://accounts.google.com/o/oauth2/token',
+        #     redirect_uri=url_for('google_authorized', _external=True),
+        #     )
   
     
     
@@ -105,9 +137,17 @@ class lib_app(Flask):
             book2=self.mongo.book.find({})
             return render_template("rent_book.html",rentbook=book,rezbook=book2)
 
-                
+
+        @self.app.route("/callback")
+        def loginGoogle():
+            self.flow.fetch_token(authorization_response=request.url)
+
+        
+        
+        
         @self.app.route("/login",methods=["GET","POST"])
         def login():
+            authorization_url_state=self.flow.authorization_url()
             if "token" not in session:
 
                 if  request.method == "POST":
