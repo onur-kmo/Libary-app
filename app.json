@@ -1,0 +1,5 @@
+{
+    "addons":[
+        {"plan":"heroku-mongodb"}
+    ]
+}
