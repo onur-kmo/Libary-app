@@ -121,8 +121,8 @@ def refound(book):
     app=lib_app()
     a,token=app._online_user()
     user=mongo.token_user.find_one({"token":token})["pasaport_no"]
-    book=mongo.book.find_one({"title":book})
-    if book["rent_user"] ==user:
+    books=mongo.book.find_one({"title":book})
+    if books["rent_user"] == user:
         mongo.book.update_one({"title":book["title"]}, {"$set":{"refound":"True"}})
         update_rent_book()
         update_rez_book()
@@ -154,6 +154,12 @@ def update_rez_book():
                                                                 "refound":"False"}})
 
 
+
+# mongo.book.update_many({},{"$set":{"rez":None,"rent_time":int(0),
+#                                    "end_time_rent":"",
+#                                    "start_time_rent":"",
+#                                    "rent_user":"",
+#                                    "refound":""}})
 
 
 # mongo.token_user.create_index("expireAt", expireAfterSeconds=3600)

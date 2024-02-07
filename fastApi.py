@@ -18,8 +18,9 @@ fastapi_app.mount("/", WSGIMiddleware(flask_app))
 def fastapi_endpoint():
     return {"message": "Hello from FastAPI endpoint"}
 
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(fastapi_app, host="127.0.0.1", port=8000)
     
-#deneme
